@@ -119,6 +119,8 @@ for b in range(0, n, step):
                         art_no = link.replace('.html', '').split('/').pop()
                         print("Write to : downloads/" + art_no + ".json\n\n")
 
+                        if not os.path.exists('downloads'):
+                                os.makedirs('downloads')
                         file = open("downloads/" + art_no + ".json", "w")
                         file.write(article.encode('utf8'))
                         file.close()
