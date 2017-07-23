@@ -1,6 +1,6 @@
 __author__ = 'avzgui'
 
-import requests
+import requests, os
 from bs4 import BeautifulSoup
 
 
