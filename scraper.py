@@ -1,12 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-__author__ = 'Antoine \"avzgui\" Richard'
+__author__ = 'Antoine \"Avzgui\" Richard'
 
-import requests, re, os
+import requests, re, os, json
 from bs4 import BeautifulSoup
-
-# TODO: article json
 
 ############# GET N PUBLIC DECLARATION ON vie-publique.fr ####################
 
@@ -86,38 +84,30 @@ for b in range(0, n, step):
                         ####### WRITE ARTICLE'S INFORMATIONS TO JSON #######
                         print("Prepare writing")
 
-
-                        article = "{\n\t\"article\": {\n"
+                        # Article's definition in json
+                        article = {
+                                    'title': '',
+                                    'keywords': [],
+                                    'sentences': []
+                                }
 
                         # Article's title
-                        article += "\t\t\"title\": \"" + title.text.replace('\n', '') + "\"\n"
+                        article['title'] = title.text.replace('\n', '')
    
                         # Article's kewords
-                        article += "\t\t\"keywords\": ["
-                        while keywords[len(keywords)-1] == "": # clean end of list
-                            keywords.pop()
-                        for keyword in keywords[:-1]:
+                        for keyword in keywords:
                             if keyword != "":
-                                article += "\"" + keyword + "\", "
-                        article += "\"" + keywords.pop() + "\"],\n"
+                                article['keywords'].append(keyword)
 
                         # Article's sentence
-                        article += "\t\t\"sentences\": [\n\t\t\t{"
-                        w_id = 0
-                        for word in words[:-1]:
+                        sentence = []
+                        for word in words:
  
-                            article += str(w_id) + ": \"" + word + "\""
+                            sentence.append(word)
                 
                             if word == "." or word == "!" or word == "?": # New sentence
-                                article += "},\n\t\t\t{"
-                                w_id = 0
-                            else:
-                                article += ","
-                                w_id += 1
-                        article += str(w_id) + ": \"" + words.pop() + "\"}\n\t\t]\n"
-
-                        # EOF
-                        article += "\t}\n}"
+                                article['sentences'].append(sentence)
+                                sentence = []
 
                         #Write
                         art_no = link.replace('.html', '').split('/').pop()
@@ -126,7 +116,7 @@ for b in range(0, n, step):
                         if not os.path.exists('downloads'):
                                 os.makedirs('downloads')
                         file = open("downloads/" + art_no + ".json", "w")
-                        file.write(article.encode('utf8'))
+                        file.write(json.dumps(article, indent=4, separators=(',', ': ')))
                         file.close()
                 else:
                     print("##################################################################################################")
