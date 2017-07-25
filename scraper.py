@@ -1,8 +1,12 @@
-__author__ = 'avzgui'
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
-import requests, os
+__author__ = 'Antoine \"avzgui\" Richard'
+
+import requests, re, os
 from bs4 import BeautifulSoup
 
+# TODO: article json
 
 ############# GET N PUBLIC DECLARATION ON vie-publique.fr ####################
 
@@ -15,7 +19,7 @@ for b in range(0, n, step):
 
     print("\nGet " + str(step) + " results from declation " + str(b) + " to declaration " + str(b + step - 1) + "\n" )
 
-    r = requests.get('http://www.vie-publique.fr/rechercher/recherche.php?query=&dateDebut=&dateFin=&b=' + str(b) + '&skin=cdp&replies='+ str(step) +'&filter=&date=&typeDoc=f/vp_type_discours/declaration&skin=cdp&auteur=&filtreAuteurLibre=&source=&q=')
+    r = requests.get('http://www.vie-publique.fr/rechercher/recherche.php?query=&b=' + str(b) + '&skin=cdp&replies='+ str(step) +'&typeDoc=f/vp_type_discours/declaration&skin=cdp&q=')
 
     if r.status_code == 200:
         soup = BeautifulSoup(r.text)
@@ -40,7 +44,7 @@ for b in range(0, n, step):
                 print "Titre : ", 
                 print(title.h2.text)
 
-                if "d&#0233bat" not in title.h2.text.lower() and "point presse" not in title.h2.text.lower() and "point de presse" not in title.h2.text.lower() and "communiqu&#0233 de presse" not in title.h2.text.lower() and "conf&#0233rence de presse" not in title.h2.text.lower() and "interview" not in title.h2.text.lower() and "tribune" not in title.h2.text.lower(): # Don't looking for this crap (yeah, it's ugly...)
+                if title.h2.text.encode("utf8").startswith("Déclaration de"):
 
                     # Get the article's keywords
                     keywords = soup.find('meta', attrs={'name': 'keywords'}).get('content').split(',')
@@ -126,5 +130,5 @@ for b in range(0, n, step):
                         file.close()
                 else:
                     print("##################################################################################################")
-                    print("################################## DEBAT | POINT PRESSE ##########################################")
+                    print("################################## NOT A DECLARATION #############################################")
                     print("##################################################################################################\n\n")
