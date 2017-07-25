@@ -67,9 +67,11 @@ for b in range(0, n, step):
                             content += p_text.lower()
     
                     # Replace contraction words
-                    for contraction in ["n'", "qu'", "d'", "l'", "s'"]:
+                    for contraction in ["n'", "qu'", "d'", "l'", "s'", "j'", "t'"]:
                         content = content.replace(contraction, contraction[:-1] + 'e ')
-                    content = content.replace('du', 'de le') # special case
+                    # special cases
+                    content = content.replace('du', 'de le')
+                    content = content.replace("c'", 'ceci')
 
                     # To consider ponctuation as word
                     for ponctuation in [',', ';', '.', '!', '?', ':']:
